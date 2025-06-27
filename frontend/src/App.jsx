@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import Login from './Login';
-import Form from './Form';
+import RegisterForm from './RegisterForm';
+// import Login from './Login'; // You can create this later
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" element={<Login />} /> */}
-        <Route path="/" element={<Form />} />
+        <Route path="/" element={<RegisterForm />} />
+        {/* <Route path="/login" element={<Login />} /> */}
       </Routes>
     </Router>
   );

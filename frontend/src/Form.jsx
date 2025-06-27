@@ -1,31 +1,34 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Input, Button, Alert } from 'antd';
 import axios from 'axios';
 
 export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({ type: '', message: '', visible: false });
-  const [data,setData]=useState();
+  const [data, setData] = useState(null);
+
   async function loadUsers() {
     try {
-      const response=await axios.get('http://localhost:5000/api/users');
-      console.log(response.data);
-       setData(response.data)
+      const response = await axios.get('https://backendjay-x2x1.onrender.com/api/users');
+      setData(response.data);
     } catch (err) {
       console.error(err);
-      setAlert({ type: 'error', message: 'Failed to submit form', visible: true });
+      setAlert({ type: 'error', message: 'Failed to load users', visible: true });
     }
   }
-useEffect(()=>{
+
+  useEffect(() => {
     loadUsers();
-},[]);
+  }, []);
+
   const onFinish = async (values) => {
     setLoading(true);
     setAlert({ ...alert, visible: false });
 
     try {
-      await axios.post('http://localhost:5000/api/form', values);
+      await axios.post('https://backendjay-x2x1.onrender.com/api/form', values);
       setAlert({ type: 'success', message: 'Form submitted successfully!', visible: true });
+      loadUsers(); // Refresh the user list
     } catch (err) {
       console.error(err);
       setAlert({ type: 'error', message: 'Failed to submit form', visible: true });
@@ -35,8 +38,7 @@ useEffect(()=>{
   };
 
   return (
-    <div>
-    <div style={{ maxWidth: 400, margin: '50px auto' }}>
+    <div style={{ maxWidth: 500, margin: '50px auto' }}>
       <h2>Register</h2>
 
       {alert.visible && (
@@ -84,36 +86,17 @@ useEffect(()=>{
           </Button>
         </Form.Item>
       </Form>
+
+      <div style={{ marginTop: 40 }}>
+        <h3>Registered Users:</h3>
+        {data === null ? (
+          <p>Loading...</p>
+        ) : (
+          data.map((user, index) => (
+            <p key={index}>{user.name} - {user.email}</p>
+          ))
+        )}
+      </div>
     </div>
-   <div>
-  {alert.visible && (
-    <Alert
-      message={alert.message}
-      type={alert.type}
-      showIcon
-      closable
-      style={{ marginBottom: 20 }}
-      onClose={() => setAlert({ ...alert, visible: false })}
-    />
-  )}
-
-  <Form layout="vertical" onFinish={onFinish}>
-    {/* Form Items... */}
-  </Form>
-
-  {/* Show users */}
-  {data == null ? (
-    <h1>Loading...</h1>
-  ) : (
-    <div style={{ maxWidth: 400, margin: '20px auto' }}>
-      <h3>Registered Users:</h3>
-      {data.map((user, index) => (
-        <p key={index}>{user.name} - {user.email}</p>
-      ))}
-    </div>
-  )}
-</div>
-
-</div>
   );
 }
